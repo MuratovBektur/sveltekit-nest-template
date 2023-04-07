@@ -1,0 +1,38 @@
+version: '3.9'
+
+name: sveltekit-nest-template_prod
+
+services:
+  client:
+    container_name: sveltekit-nest-template_prod_client
+    build: client
+    command: npm start
+    expose:
+      - 3000
+    environment: 
+      - NODE_ENV=prod
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./client:/app
+  server:
+    container_name: sveltekit-nest-template_prod_server
+    restart: always
+    build: server
+    command: npm run start:prod
+    expose:
+      - 5000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /app/node_modules
+  nginx:
+    image: nginx
+    restart: "no"
+    container_name: "sveltekit-nest-template_prod_nginx"
+    ports:
+      - 80:80
+    depends_on:
+      - server
+      - client
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./nginx/prod:/etc/nginx/conf.d 

@@ -1,0 +1,39 @@
+version: '3.9'
+
+name: sveltekit-nest-template_dev
+
+services:
+  client:
+    container_name: sveltekit-nest-template_dev_client
+    build:
+      context: ./client
+      dockerfile: Dockerfile_dev
+    expose:
+      - 3000
+    environment: 
+      - NODE_ENV=dev
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./client:/app
+  server:
+    container_name: sveltekit-nest-template_dev_server
+    build:
+      context: ./server
+      dockerfile: Dockerfile_dev
+    expose:
+      - 5000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./server:/app
+  nginx:
+    image: nginx
+    restart: "no"
+    container_name: "sveltekit-nest-template_dev_nginx"
+    ports:
+      - 7000:80
+    depends_on:
+      - server
+      - client
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./nginx/dev:/etc/nginx/conf.d 
